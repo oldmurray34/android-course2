@@ -71,7 +71,27 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun likeById(id: Long) {
-        thread { repository.likeById(id) }
+        thread {
+            var post: MutableLiveData<Post?> = data.map { data ->
+                data.posts.find { it.id == id }
+            } as MutableLiveData<Post?>
+
+            if (post.value?.likedByMe == true) {
+                repository.dislikeById(id)
+            } else {
+                repository.likeById(id)
+            }
+
+            val newPosts = _data.value?.posts?.map {
+                if (it.id != id) it else it.copy(
+                    likedByMe = !it.likedByMe,
+                    likes = if (it.likedByMe) it.likes - 1 else it.likes + 1
+                )
+            }
+            _data.postValue(
+                newPosts?.let { _data.value?.copy(posts = it) }
+            )
+        }
     }
 
     fun removeById(id: Long) {
