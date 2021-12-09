@@ -72,14 +72,14 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     fun likeById(id: Long) {
         thread {
-            var post: MutableLiveData<Post?> = data.map { data ->
-                data.posts.find { it.id == id }
-            } as MutableLiveData<Post?>
+            val post = _data.value?.posts?.find { it.id == id }
 
-            if (post.value?.likedByMe == true) {
-                repository.dislikeById(id)
-            } else {
-                repository.likeById(id)
+            if (post != null) {
+                if (post.likedByMe) {
+                    repository.dislikeById(id)
+                } else {
+                    repository.likeById(id)
+                }
             }
 
             val newPosts = _data.value?.posts?.map {
