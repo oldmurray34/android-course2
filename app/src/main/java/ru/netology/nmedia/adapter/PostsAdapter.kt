@@ -6,7 +6,10 @@ import android.widget.PopupMenu
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import ru.netology.nmedia.R
+import ru.netology.nmedia.activity.FeedFragment
 import ru.netology.nmedia.databinding.CardPostBinding
 import ru.netology.nmedia.dto.Post
 
@@ -18,7 +21,7 @@ interface OnInteractionListener {
 }
 
 class PostsAdapter(
-    private val onInteractionListener: OnInteractionListener,
+    private val onInteractionListener: OnInteractionListener
 ) : ListAdapter<Post, PostViewHolder>(PostDiffCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
         val binding = CardPostBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -44,6 +47,13 @@ class PostViewHolder(
             // в адаптере
             like.isChecked = post.likedByMe
             like.text = "${post.likes}"
+
+            val url = "http://10.0.2.2:9999/avatars/${post.authorAvatar}"
+            Glide.with(avatar.context)
+                .load(url)
+                .circleCrop()
+                .timeout(30_000)
+                .into(avatar)
 
             menu.setOnClickListener {
                 PopupMenu(it.context, it).apply {
@@ -72,7 +82,31 @@ class PostViewHolder(
             share.setOnClickListener {
                 onInteractionListener.onShare(post)
             }
+
+
         }
+
+
+//        when (post.author) {
+//            "Сбер" -> {
+//                val url = "http://10.0.2.2:9999/avatars/sber.jpg"
+//                Glide.with(binding.avatar)
+//                    .load(url)
+//                    .into(binding.avatar)
+//            }
+//            "Netology" -> {
+//                val url = "http://10.0.2.2:9999/avatars/netology.jpg"
+//                Glide.with(binding.avatar)
+//                    .load(url)
+//                    .into(binding.avatar)
+//            }
+//            "Тинькофф" -> {
+//                val url = "http://10.0.2.2:9999/avatars/tcs.jpg"
+//                Glide.with(binding.avatar)
+//                    .load(url)
+//                    .into(binding.avatar)
+//            }
+//        }
     }
 }
 
