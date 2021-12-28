@@ -36,8 +36,6 @@ class PostRepositoryImpl : PostRepository {
         PostApiService.api.getAllAsync().enqueue(object : Callback<List<Post>> {
             override fun onResponse(call: Call<List<Post>>, response: Response<List<Post>>) {
                 if (!response.isSuccessful) {
-                    response.code()
-                    response.errorBody()
                     callback.onError(RuntimeException(response.message()))
                     return
                 }
@@ -54,8 +52,6 @@ class PostRepositoryImpl : PostRepository {
         PostApiService.api.getPostAsync(id).enqueue(object : Callback<Post> {
             override fun onResponse(call: Call<Post>, response: Response<Post>) {
                 if (!response.isSuccessful) {
-                    response.code()
-                    response.errorBody()
                     callback.onError(RuntimeException(response.message()))
                     return
                 }
@@ -72,8 +68,6 @@ class PostRepositoryImpl : PostRepository {
         PostApiService.api.likeByIdAsync(id).enqueue(object : Callback<Post> {
             override fun onResponse(call: Call<Post>, response: Response<Post>) {
                 if (!response.isSuccessful) {
-                    response.code()
-                    response.errorBody()
                     callback.onError(RuntimeException(response.message()))
                     return
                 }
@@ -90,8 +84,6 @@ class PostRepositoryImpl : PostRepository {
         PostApiService.api.dislikeByIdAsync(id).enqueue(object : Callback<Post> {
             override fun onResponse(call: Call<Post>, response: Response<Post>) {
                 if (!response.isSuccessful) {
-                    response.code()
-                    response.errorBody()
                     callback.onError(RuntimeException(response.message()))
                     return
                 }
@@ -108,8 +100,6 @@ class PostRepositoryImpl : PostRepository {
         PostApiService.api.postCreation(post).enqueue(object : Callback<Post> {
             override fun onResponse(call: Call<Post>, response: Response<Post>) {
                 if (!response.isSuccessful) {
-                    response.code()
-                    response.errorBody()
                     callback.onError(RuntimeException(response.message()))
                     return
                 }
@@ -142,8 +132,6 @@ class PostRepositoryImpl : PostRepository {
         PostApiService.api.deleteById(id).enqueue(object : Callback<Unit> {
             override fun onResponse(call: Call<Unit>, response: Response<Unit>) {
                 if (!response.isSuccessful) {
-                    response.code()
-                    response.errorBody()
                     callback.onError(RuntimeException(response.message()))
                     return
                 }
@@ -154,25 +142,5 @@ class PostRepositoryImpl : PostRepository {
                 callback.onError(t)
             }
         })
-    }
-
-    override fun findPostByIdAsync(callback: PostRepository.RepositoryCallback<Post>, id: Long) {
-
-        val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
-        StrictMode.setThreadPolicy(policy)
-
-        val request: Request = Request.Builder()
-            .get()
-            .url("${BuildConfig.BASE_URL}/api/posts/$id")
-            .build()
-
-        return client.newCall(request)
-            .execute()
-            .use {
-                it.body?.string()
-            }
-            .let {
-                gson.fromJson(it, typePostToken.type)
-            }
     }
 }

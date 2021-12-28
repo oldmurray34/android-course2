@@ -17,8 +17,6 @@ interface PostRepository {
 
     fun getPostAsync(callback: RepositoryCallback<Post>, id: Long)
 
-    fun findPostByIdAsync(callback: RepositoryCallback<Post>, id: Long)
-
     interface RepositoryCallback<T> {
         fun onSuccess(value: T)
 
