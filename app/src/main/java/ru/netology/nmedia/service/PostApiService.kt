@@ -3,6 +3,7 @@ package ru.netology.nmedia.service
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.create
@@ -12,43 +13,46 @@ import ru.netology.nmedia.BuildConfig.BASE_URL
 import ru.netology.nmedia.dto.Post
 import java.util.concurrent.TimeUnit
 
+private const val BASE_URL = "${BuildConfig.BASE_URL}/api/slow/"
+
 private val logging = HttpLoggingInterceptor().apply {
     if (BuildConfig.DEBUG) {
         level = HttpLoggingInterceptor.Level.BODY
     }
 }
 
-private val client = OkHttpClient.Builder()
-    .connectTimeout(30, TimeUnit.SECONDS)
+private val okhttp = OkHttpClient.Builder()
     .addInterceptor(logging)
     .build()
 
 private val retrofit = Retrofit.Builder()
-    .baseUrl(BASE_URL)
     .addConverterFactory(GsonConverterFactory.create())
-    .client(client)
+    .baseUrl(BASE_URL)
+    .client(okhttp)
     .build()
 
-interface PostApi {
+interface PostsApiService {
     @GET("posts")
-    fun getAllAsync() : Call<List<Post>>
+    suspend fun getAll(): Response<List<Post>>
 
     @GET("posts/{id}")
-    fun getPostAsync(@Path("id") id: Long): Call<Post>
+    suspend fun getById(@Path("id") id: Long): Response<Post>
 
     @POST("posts")
-    fun postCreation(@Body post: Post): Call<Post>
-
-    @POST("posts/{id}/likes")
-    fun likeByIdAsync(@Path("id") id: Long): Call<Post>
-
-    @DELETE("posts/{id}/likes")
-    fun dislikeByIdAsync(@Path("id") id: Long): Call<Post>
+    suspend fun save(@Body post: Post): Response<Post>
 
     @DELETE("posts/{id}")
-    fun deleteById(@Path("id") id: Long): Call<Unit>
+    suspend fun removeById(@Path("id") id: Long): Response<Unit>
+
+    @POST("posts/{id}/likes")
+    suspend fun likeById(@Path("id") id: Long): Response<Post>
+
+    @DELETE("posts/{id}/likes")
+    suspend fun dislikeById(@Path("id") id: Long): Response<Post>
 }
 
-object PostApiService {
-    val api : PostApi by lazy(retrofit::create)
+object PostsApi {
+    val service: PostsApiService by lazy {
+        retrofit.create(PostsApiService::class.java)
+    }
 }
