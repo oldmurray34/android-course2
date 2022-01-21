@@ -15,21 +15,37 @@ import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.model.AttachmentType
 import ru.netology.nmedia.utils.Utils
 import ru.netology.nmedia.viewmodel.CardViewModel
+import ru.netology.nmedia.viewmodel.PhotoViewModel
 import ru.netology.nmedia.viewmodel.PostViewModel
+import androidx.appcompat.app.AppCompatActivity
+
+
+
 
 
 class PhotoFragment : Fragment() {
 
-    private val viewModel: PostViewModel by viewModels(
+    private val viewModel: PhotoViewModel by viewModels(
         ownerProducer = ::requireParentFragment
     )
 
     private val cardPostViewModel: CardViewModel by viewModels()
+    private val photoViewModel: PhotoViewModel by viewModels()
+
+    override fun onResume() {
+        super.onResume()
+        (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        (activity as AppCompatActivity?)!!.supportActionBar!!.show()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
 
         val post = Post(
@@ -75,9 +91,9 @@ class PhotoFragment : Fragment() {
 
             binding.likeButtonPhotoFragment.setOnClickListener {
                 if (!post.likeByMe) {
-                    cardPostViewModel.likeById(post.id)
+                    photoViewModel.likeById(post.id)
                 } else {
-                    cardPostViewModel.unlikeById(post.id)
+                    photoViewModel.unlikeById(post.id)
                 }
                 cardPostViewModel.post.observe(owner = viewLifecycleOwner) {
                     val newPost = it.post
