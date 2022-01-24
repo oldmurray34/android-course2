@@ -5,6 +5,7 @@ import ru.netology.nmedia.dto.Post
 data class PostModel(
     val post: Post = Post(
         id = 0,
+        authorId = 0,
         content = "",
         author = "",
         authorAvatar = "",
@@ -15,4 +16,4 @@ data class PostModel(
     val empty: Boolean = false,
     val loading: Boolean = false,
     val error: Boolean = false
-    )
+)

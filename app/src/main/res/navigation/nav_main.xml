@@ -27,6 +27,12 @@
         <action
             android:id="@+id/action_mainFragment_to_photoFragment"
             app:destination="@id/photoFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_authFragment"
+            app:destination="@id/authFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_regFragment"
+            app:destination="@id/regFragment" />
     </fragment>
     <fragment
         android:id="@+id/newPostFragment"
@@ -58,12 +64,30 @@
         <action
             android:id="@+id/action_postCardFragment_to_photoFragment"
             app:destination="@id/photoFragment" />
+        <action
+            android:id="@+id/action_postCardFragment_to_authFragment"
+            app:destination="@id/authFragment" />
     </fragment>
     <fragment
         android:id="@+id/photoFragment"
         android:name="ru.netology.nmedia.activity.PhotoFragment"
         android:label="fragment_photo"
         tools:layout="@layout/fragment_photo" >
+        <action
+            android:id="@+id/action_photoFragment_to_authFragment"
+            app:destination="@id/authFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/authFragment"
+        android:name="ru.netology.nmedia.activity.AuthFragment"
+        android:label="fragment_auth"
+        tools:layout="@layout/fragment_auth" >
+    </fragment>
+    <fragment
+        android:id="@+id/regFragment"
+        android:name="ru.netology.nmedia.activity.RegFragment"
+        android:label="fragment_reg"
+        tools:layout="@layout/fragment_reg" >
     </fragment>
 
 </navigation>

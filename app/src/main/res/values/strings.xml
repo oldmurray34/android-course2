@@ -42,4 +42,27 @@
     <string name="photo">Photo view in attachment of post</string>
     <string name="menu_copy_url">copy photo URL</string>
     <string name="Back">Back</string>
+    <string name="google_play_unavailable" translatable="false">Google Api Unavailable</string>
+    <string name="sign_in" translatable="false">Sign in</string>
+    <string name="sign_up" translatable="false">Sign up</string>
+    <string name="sign_out" translatable="false">Sign out</string>
+    <string name="server_error_string" translatable="false">"Server error"</string>
+    <string name="registration" translatable="false">Registration</string>
+    <string name="login" translatable="false">Login:</string>
+    <string name="enter_login" translatable="false">Enter login</string>
+    <string name="name_text" translatable="false">Name</string>
+    <string name="enter_name" translatable="false">Enter name</string>
+    <string name="password" translatable="false">Password</string>
+    <string name="enter_password" translatable="false">Enter password</string>
+    <string name="pass_conf" translatable="false">Confirm</string>
+    <string name="add_avatar" translatable="false">Add avatar</string>
+    <string name="сhoose_avatar" translatable="false">Choose avatar</string>
+    <string name="enter" translatable="false">Enter</string>
+    <string name="Registration_done" translatable="false">Registration complete, log in on the home screen</string>
+    <string name="pass_miss" translatable="false">Password mismatch</string>
+    <string name="authorization" translatable="false">Authorization</string>
+    <string name="login_password_error" translatable="false">Wrong password andor login</string>
+    <string name="authorization_required" translatable="false">Authorization required</string>
+    <string name="authorize" translatable="false">Authorize</string>
+    <string name="Exit_warning" translatable="false">Do you really want to exit?</string>
 </resources>

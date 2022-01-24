@@ -12,6 +12,7 @@ import ru.netology.nmedia.model.AttachmentType
 data class PostEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long,
+    val authorId: Long,
     val author: String,
     val authorAvatar: String,
     val content: String,
@@ -21,27 +22,30 @@ data class PostEntity(
     @ColumnInfo(name = "numberOfLikes")
     val likes: Int = 0,
     val showOrNot: Boolean = false,
+    val ownedByMe: Boolean = false,
     @Embedded
     var attachment: AttachmentEmbeddable?
 ) {
-    fun toDto(): Post {
-        return Post(
-            id,
-            author,
-            authorAvatar,
-            content,
-            published,
-            likedByMe,
-            likes,
-            showOrNot,
-            attachment?.toDto()
-        )
-    }
+    fun toDto() = Post(
+        id,
+        authorId,
+        author,
+        authorAvatar,
+        content,
+        published,
+        likedByMe,
+        likes,
+        showOrNot,
+        ownedByMe,
+        attachment?.toDto()
+    )
+
 
     companion object {
         fun fromDto(dto: Post) =
             PostEntity(
                 dto.id,
+                dto.authorId,
                 dto.author,
                 dto.authorAvatar,
                 dto.content,
@@ -49,12 +53,14 @@ data class PostEntity(
                 dto.likeByMe,
                 dto.numberOfLikes,
                 true,
+                dto.ownedByMe,
                 AttachmentEmbeddable.fromDto(dto.attachment)
             )
 
         fun fromApi(dto: Post) =
             PostEntity(
                 dto.id,
+                dto.authorId,
                 dto.author,
                 dto.authorAvatar,
                 dto.content,
@@ -62,6 +68,7 @@ data class PostEntity(
                 dto.likeByMe,
                 dto.numberOfLikes,
                 false,
+                dto.ownedByMe,
                 AttachmentEmbeddable.fromDto(dto.attachment)
             )
     }
@@ -79,7 +86,6 @@ data class AttachmentEmbeddable(
         }
     }
 }
-
 
 fun List<PostEntity>.toDto(): List<Post> = map(PostEntity::toDto)
 fun List<Post>.toEntity(): List<PostEntity> = map(PostEntity::fromDto)

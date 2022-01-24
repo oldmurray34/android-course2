@@ -44,9 +44,9 @@ interface PostDao {
 }
 
 class Converters {
-        @TypeConverter
-        fun toAttachmentType(value: String) = enumValueOf<AttachmentType>(value)
+    @TypeConverter
+    fun toAttachmentType(value: String) = enumValueOf<AttachmentType>(value)
 
-        @TypeConverter
-        fun fromAttachment(value: AttachmentType) = value.name
+    @TypeConverter
+    fun fromAttachment(value: AttachmentType) = value.name
 }

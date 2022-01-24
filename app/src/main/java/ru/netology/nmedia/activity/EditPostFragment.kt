@@ -49,9 +49,7 @@ class EditPostFragment : Fragment() {
             }
 
             val content = binding.etInputArea.text.toString()
-            if (postId != null) {
-                viewModel.changeContent(postId, content)
-            }
+            viewModel.changeContent(postId!!, content)
             viewModel.postCreation()
 
             Utils.hideKeyboard(requireView())

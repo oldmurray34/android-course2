@@ -10,12 +10,14 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
+import com.google.android.material.snackbar.Snackbar
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentPostCardBinding
 import ru.netology.nmedia.dto.Attachment
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.model.AttachmentType
 import ru.netology.nmedia.utils.Utils
+import ru.netology.nmedia.viewmodel.AuthViewModel
 import ru.netology.nmedia.viewmodel.CardViewModel
 import ru.netology.nmedia.viewmodel.PostViewModel
 
@@ -25,6 +27,10 @@ class PostCardFragment : Fragment() {
     private val viewModel: PostViewModel by viewModels(
         ownerProducer = ::requireParentFragment
     )
+    private val authViewModel: AuthViewModel by viewModels(
+        ownerProducer = ::requireParentFragment
+    )
+
     private val cardPostViewModel: CardViewModel by viewModels()
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,6 +40,7 @@ class PostCardFragment : Fragment() {
 
         val post = Post(
             id = arguments?.getLong("postId") as Long,
+            authorId = arguments?.getLong("authorId") as Long,
             author = arguments?.getString("author") as String,
             authorAvatar = arguments?.getString("authorAvatar") as String,
             content = arguments?.getString("content") as String,
@@ -75,7 +82,8 @@ class PostCardFragment : Fragment() {
             publishedPostFragment.text = post.published
             contentPostFragment.text = post.content
             likeButtonPostFragment.text = Utils.formatLikes(post.numberOfLikes)
-            likeButtonPostFragment.isChecked = post.likeByMe
+            likeButtonChange(post)
+
 
             if (post.attachment != null) {
                 binding.fragmentPostImageAttachment.visibility = View.VISIBLE
@@ -86,14 +94,26 @@ class PostCardFragment : Fragment() {
             }
 
             binding.likeButtonPostFragment.setOnClickListener {
-                if (!post.likeByMe) {
+                if (!post.likeByMe && authViewModel.authenticated) {
                     cardPostViewModel.likeById(post.id)
-                } else {
+                } else if (post.likeByMe && authViewModel.authenticated) {
                     cardPostViewModel.unlikeById(post.id)
+                } else {
+                    Snackbar.make(
+                        binding.root,
+                        getString(R.string.authorization_required),
+                        Snackbar.LENGTH_LONG
+                    )
+                        .setAction(getString(R.string.authorize)) {
+                            findNavController().navigate(R.id.action_postCardFragment_to_authFragment)
+                        }
+                        .show()
+                    returnTransition
                 }
                 cardPostViewModel.post.observe(owner = viewLifecycleOwner) {
                     val newPost = it.post
                     binding.likeButtonPostFragment.text = Utils.formatLikes(newPost.numberOfLikes)
+                    likeButtonChange(newPost)
                 }
             }
 
@@ -116,7 +136,7 @@ class PostCardFragment : Fragment() {
 
             binding.ibMenuPostFragment.setOnClickListener {
                 PopupMenu(it.context, it).apply {
-                    inflate(R.menu.menu_main)
+                    inflate(R.menu.menu_options)
                     setOnMenuItemClickListener { item ->
                         when (item.itemId) {
                             R.id.menuItemDelete -> {
@@ -142,5 +162,15 @@ class PostCardFragment : Fragment() {
             }
         }
         return binding.root
+    }
+
+    private fun FragmentPostCardBinding.likeButtonChange(newPost: Post) {
+        if (newPost.likeByMe) {
+            likeButtonPostFragment.setIconResource(R.drawable.ic_baseline_favorite_24)
+            likeButtonPostFragment.setIconTintResource(R.color.colorRed)
+        } else {
+            likeButtonPostFragment.setIconResource(R.drawable.ic_baseline_favorite_border_24)
+            likeButtonPostFragment.setIconTintResource(R.color.colorDarkGrey)
+        }
     }
 }

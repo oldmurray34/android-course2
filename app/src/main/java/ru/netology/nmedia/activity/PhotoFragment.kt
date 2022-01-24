@@ -18,38 +18,28 @@ import ru.netology.nmedia.viewmodel.CardViewModel
 import ru.netology.nmedia.viewmodel.PhotoViewModel
 import ru.netology.nmedia.viewmodel.PostViewModel
 import androidx.appcompat.app.AppCompatActivity
-
-
-
+import com.google.android.material.snackbar.Snackbar
+import ru.netology.nmedia.R
+import ru.netology.nmedia.viewmodel.AuthViewModel
 
 
 class PhotoFragment : Fragment() {
 
-    private val viewModel: PhotoViewModel by viewModels(
+    private val authViewModel: AuthViewModel by viewModels(
         ownerProducer = ::requireParentFragment
     )
 
     private val cardPostViewModel: CardViewModel by viewModels()
-    private val photoViewModel: PhotoViewModel by viewModels()
-
-    override fun onResume() {
-        super.onResume()
-        (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        (activity as AppCompatActivity?)!!.supportActionBar!!.show()
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?,
+        savedInstanceState: Bundle?
     ): View? {
 
         val post = Post(
             id = arguments?.getLong("postId") as Long,
+            authorId = arguments?.getLong("authorId") as Long,
             author = arguments?.getString("author") as String,
             authorAvatar = arguments?.getString("authorAvatar") as String,
             content = arguments?.getString("content") as String,
@@ -79,7 +69,7 @@ class PhotoFragment : Fragment() {
             val urlAttach = "http://10.0.2.2:9999/media/${post.attachment?.url}"
 
             likeButtonPhotoFragment.text = Utils.formatLikes(post.numberOfLikes)
-            likeButtonPhotoFragment.isChecked = post.likeByMe
+            likeButtonChange(post)
 
             if (post.attachment != null) {
                 binding.photoView.visibility = View.VISIBLE
@@ -90,21 +80,43 @@ class PhotoFragment : Fragment() {
             }
 
             binding.likeButtonPhotoFragment.setOnClickListener {
-                if (!post.likeByMe) {
-                    photoViewModel.likeById(post.id)
+                if (!post.likeByMe && authViewModel.authenticated) {
+                    cardPostViewModel.likeById(post.id)
+                } else if (post.likeByMe && authViewModel.authenticated) {
+                    cardPostViewModel.unlikeById(post.id)
                 } else {
-                    photoViewModel.unlikeById(post.id)
+                    Snackbar.make(
+                        binding.root,
+                        getString(R.string.authorization_required),
+                        Snackbar.LENGTH_LONG
+                    )
+                        .setAction(getString(R.string.authorize)) {
+                            findNavController().navigate(R.id.action_photoFragment_to_authFragment)
+                        }
+                        .show()
+                    returnTransition
                 }
                 cardPostViewModel.post.observe(owner = viewLifecycleOwner) {
                     val newPost = it.post
                     binding.likeButtonPhotoFragment.text = Utils.formatLikes(newPost.numberOfLikes)
+                    likeButtonChange(newPost)
                 }
             }
 
-            binding.mbBackFromPhotoFragment.setOnClickListener{
+            binding.mbBackFromPhotoFragment.setOnClickListener {
                 findNavController().navigateUp()
             }
         }
         return binding.root
+    }
+
+    private fun FragmentPhotoBinding.likeButtonChange(post: Post) {
+        if (post.likeByMe) {
+            likeButtonPhotoFragment.setIconResource(R.drawable.ic_baseline_favorite_24)
+            likeButtonPhotoFragment.setIconTintResource(R.color.colorRed)
+        } else {
+            likeButtonPhotoFragment.setIconResource(R.drawable.ic_baseline_favorite_border_24)
+            likeButtonPhotoFragment.setIconTintResource(R.color.colorDarkGrey)
+        }
     }
 }

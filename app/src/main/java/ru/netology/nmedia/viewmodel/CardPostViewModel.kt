@@ -18,7 +18,8 @@ import ru.netology.nmedia.utils.Utils
 class CardViewModel(application: Application) : AndroidViewModel(application) {
 
     private val empty = Post(
-        id = 0,
+        id = 0L,
+        authorId = 0L,
         content = "",
         author = "",
         authorAvatar = "",

@@ -1,7 +1,10 @@
 package ru.netology.nmedia.activity
 
 import android.app.Activity
+import android.app.AlertDialog
+import android.app.Dialog
 import android.content.Context.MODE_PRIVATE
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
@@ -15,6 +18,7 @@ import androidx.navigation.fragment.findNavController
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.material.snackbar.Snackbar
 import ru.netology.nmedia.R
+import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.databinding.FragmentNewPostBinding
 import ru.netology.nmedia.utils.Utils
 import ru.netology.nmedia.viewmodel.CardViewModel
@@ -49,12 +53,22 @@ class NewPostFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val prefs: SharedPreferences? = this.context?.getSharedPreferences("draft", MODE_PRIVATE)
         return when (item.itemId) {
             R.id.save -> {
                 fragmentBinding?.let {
                     viewModel.changeContent(0, it.etInputArea.text.toString())
                     viewModel.postCreation()
                     Utils.hideKeyboard(requireView())
+                    if (prefs != null) {
+                        clearDraft(prefs)
+                    }
+                }
+                true
+            }
+            R.id.signOut -> {
+                fragmentBinding?.let {
+                    onCreateDialog().show()
                 }
                 true
             }
@@ -62,12 +76,27 @@ class NewPostFragment : Fragment() {
         }
     }
 
+    private fun onCreateDialog(): Dialog {
+        val builder = AlertDialog.Builder(context)
+        builder.setView(R.layout.custom_dialog_exit_warning)
+        builder.setIcon(R.drawable.ic_baseline_logout_24)
+        builder.setPositiveButton("Yes") { _: DialogInterface, _: Int ->
+            AppAuth.getInstance().removeAuth()
+            findNavController().navigateUp()
+        }
+        builder.setNegativeButton("Cancel") { dialog, _ ->
+            dialog.cancel()
+        }
+        return builder.create()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
+
+        this.activity?.title = "Post creation"
 
         val binding = FragmentNewPostBinding.inflate(
             inflater,
@@ -82,6 +111,7 @@ class NewPostFragment : Fragment() {
         val callback = requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             if (prefs != null) {
                 saveDraft(prefs, binding.etInputArea.text.toString())
+                this@NewPostFragment.onDetach()
                 findNavController().navigateUp()
             }
         }
@@ -115,10 +145,12 @@ class NewPostFragment : Fragment() {
                 .crop()
                 .compress(2048)
                 .galleryOnly()
-                .galleryMimeTypes(arrayOf(
-                    "image/png",
-                    "image/jpeg",
-                ))
+                .galleryMimeTypes(
+                    arrayOf(
+                        "image/png",
+                        "image/jpeg",
+                    )
+                )
                 .start(photoRequestCode)
         }
 
@@ -133,22 +165,6 @@ class NewPostFragment : Fragment() {
         binding.removePhoto.setOnClickListener {
             viewModel.changePhoto(null, null)
         }
-
-
-//        binding.fabConfirmation.setOnClickListener {
-//            if (binding.etInputArea.text.isNullOrBlank()) {
-//                Utils.hideKeyboard(requireView())
-//                findNavController().navigateUp()
-//            } else {
-//                viewModel.changeContent(0, binding.etInputArea.text.toString())
-//                viewModel.postCreation()
-//                if (prefs != null) {
-//                    clearDraft(prefs)
-//                }
-//                Utils.hideKeyboard(requireView())
-//                findNavController().navigateUp()
-//            }
-//        }
 
         viewModel.photo.observe(viewLifecycleOwner) {
             if (it.uri == null) {
@@ -214,3 +230,4 @@ private fun clearDraft(prefs: SharedPreferences) {
     editor.remove("draftText")
     editor.apply()
 }
+

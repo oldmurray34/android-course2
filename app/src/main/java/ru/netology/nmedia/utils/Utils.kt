@@ -10,6 +10,7 @@ import android.view.inputmethod.InputMethodManager
 import androidx.annotation.Nullable
 import androidx.room.TypeConverter
 import ru.netology.nmedia.dto.Attachment
+import ru.netology.nmedia.dto.AuthUser
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.model.AttachmentType
 import java.time.LocalDateTime
@@ -73,6 +74,7 @@ class Utils {
     object EmptyPost {
         val emptyPost = Post(
             id = 0L,
+            authorId = 0L,
             author = "",
             authorAvatar = "",
             content = "",
@@ -80,6 +82,13 @@ class Utils {
             likeByMe = false,
             numberOfLikes = 0,
             attachment = null
+        )
+    }
+
+    object EmptyUser {
+        val emptyUser = AuthUser(
+            id = 0L,
+            token = ""
         )
     }
 
@@ -93,3 +102,4 @@ class Utils {
             thisRef.getString(property.name)
     }
 }
+

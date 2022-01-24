@@ -18,7 +18,8 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
         PostRepositoryImpl(AppDb.getInstance(context = application).postDao())
 
     private val empty = Post(
-        id = 0,
+        id = 0L,
+        authorId = 0L,
         content = "",
         author = "",
         authorAvatar = "",
