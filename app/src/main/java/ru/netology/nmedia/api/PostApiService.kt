@@ -14,6 +14,7 @@ import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.dto.AuthUser
 import ru.netology.nmedia.dto.Media
 import ru.netology.nmedia.dto.Post
+import ru.netology.nmedia.dto.PushToken
 
 private val logging = HttpLoggingInterceptor().apply {
     if (BuildConfig.DEBUG) {
@@ -62,6 +63,9 @@ interface PostApi {
 
     @DELETE("posts/{id}")
     suspend fun deleteById(@Path("id") id: Long): Response<Unit>
+
+    @POST("users/push-tokens")
+    suspend fun sendPushToken(@Body token: PushToken): Response<Unit>
 
     @Multipart
     @POST("media")

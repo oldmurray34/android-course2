@@ -15,7 +15,8 @@
         android:theme="@style/AppTheme"
         android:name=".application.NMediaApplication"
         android:usesCleartextTraffic="true">
-        <activity android:name=".activity.AppActivity">
+        <activity android:name=".activity.AppActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

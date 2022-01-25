@@ -65,4 +65,6 @@
     <string name="authorization_required" translatable="false">Authorization required</string>
     <string name="authorize" translatable="false">Authorize</string>
     <string name="Exit_warning" translatable="false">Do you really want to exit?</string>
+    <string name="notification_for_all" translatable="false">%1$s</string>
+    <string name="channeremote_description" translatable="false">notifications from a remote server</string>
 </resources>
