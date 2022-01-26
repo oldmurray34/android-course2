@@ -6,6 +6,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.util.Log
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -51,6 +52,7 @@ class FCMService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
         AppAuth.getInstance().sendPushToken(token)
+        Log.e("token", token)
     }
 
     private fun handleForAll(content: Handler) {
